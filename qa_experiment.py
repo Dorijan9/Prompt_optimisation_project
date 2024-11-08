@@ -5,7 +5,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import matplotlib.pyplot as plt
 
-# Step 1: Set up question-answer pairs
+# Set up question-answer pairs
 data = pd.DataFrame({
     'Category': ['Math', 'Reasoning', 'Coding', 'Multiple-Choice'],
     'Question': [
@@ -17,7 +17,7 @@ data = pd.DataFrame({
     'Expected Answer': ['4', 'Tuesday', 'def add(a, b): return a+b', 'B']
 })
 
-# Step 2: Load Models
+# Load Models
 def load_model(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
@@ -28,14 +28,14 @@ models = {
     # Add other models here as needed
 }
 
-# Step 3: Define Modified Prompting Techniques for Single Answer
+# Define Modified Prompting Techniques for Single Answer
 def standard_prompt(question):
     return f"{question} Provide only one answer."
 
 def cot_prompt(question):
     return f"Let's think through this step-by-step. {question} Respond with only one answer."
 
-# Step 4: Function to Get Model Response with Limited Response Length
+# Function to Get Model Response with Limited Response Length
 def get_model_response(model, tokenizer, prompt):
     # Ensure the tokenizer has a padding token
     if tokenizer.pad_token is None:
@@ -55,7 +55,7 @@ def get_model_response(model, tokenizer, prompt):
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return response
 
-# Step 5: Run Experiment and Collect Responses
+# Run Experiment and Collect Responses
 results = []
 
 for model_name, (tokenizer, model) in models.items():
@@ -75,14 +75,14 @@ for model_name, (tokenizer, model) in models.items():
 # Convert results to DataFrame
 results_df = pd.DataFrame(results)
 
-# Step 6: Partial Match Evaluation Function
+# Partial Match Evaluation Function
 def evaluate_response_partial(expected, response):
     return expected.strip().lower() in response.strip().lower()
 
 # Apply the partial match evaluation function
 results_df['Correct'] = results_df.apply(lambda x: evaluate_response_partial(x['Expected Answer'], x['Response']), axis=1)
 
-# Step 7: Visualize Results
+# Visualize Results
 # Group by Model, Prompting Method, and Category and calculate mean accuracy
 accuracy = results_df.groupby(['Model', 'Prompting Method', 'Category'])['Correct'].mean().unstack()
 accuracy.plot(kind='bar', figsize=(10, 6))
@@ -90,7 +90,7 @@ plt.title("Model Performance by Prompting Method and Category")
 plt.ylabel("Accuracy")
 plt.show()
 
-# Step 8: Save Results to CSV for further analysis
+# Save Results to CSV for further analysis
 results_df.to_csv("model_evaluation_results.csv", index=False)
 
 # Display the DataFrame for quick inspection
