@@ -7,7 +7,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 os.environ["HUGGING_FACE_TOKEN"] = "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"
 
 # Load model and tokenizer
-model_name = "gpt2"  # Replace with desired model
+model_name = "EleutherAI/gpt-neo-125M"  # Replace with desired model
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
