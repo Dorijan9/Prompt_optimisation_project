@@ -33,4 +33,4 @@ async def predict(request: TextRequest):
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return {"generated_text": response}
 
-# Run the server with: uvicorn app:app
+# Run the server with: uvicorn app:app --reload

@@ -1,0 +1,24 @@
+{
+    // /opt/anaconda3/bin/python
+    // usr/bin/python3 -m pip install
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "echo",
+            "type": "shell",
+            "command": "echo Hello"
+        },
+        {
+            "label": "Delete __pycache__",
+            "type": "shell",
+            "command": "/opt/anaconda3/bin/python delete_pycache.py",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

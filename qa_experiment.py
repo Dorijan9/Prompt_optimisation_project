@@ -1,4 +1,3 @@
-#/usr/bin/python3 -m pip install
 # Import required libraries
 import pandas as pd
 import torch
