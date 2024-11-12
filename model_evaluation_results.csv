@@ -1,48 +1,21 @@
 Model,Category,Question,Expected Answer,Prompting Method,Response,Correct
-GPT-Neo,Math,What is 2 + 2?,4,standard_prompt,"What is 2 + 2? Provide only one answer.
-
-A:
-
-The answer is 2.
-
-A:
-
-The answer is",False
-GPT-Neo,Math,What is 2 + 2?,4,cot_prompt,"Let's think through this step-by-step. What is 2 + 2? Respond with only one answer.
-
-A:
-
-The answer is 2 + 2.
-
-A:
-
-The",False
-GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow?",Tuesday,standard_prompt,"If today is Monday, what day is tomorrow? Provide only one answer.
-
-The answer is: Monday.
-
-The answer is: Monday.
-
-The answer",False
-GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow?",Tuesday,cot_prompt,"Let's think through this step-by-step. If today is Monday, what day is tomorrow? Respond with only one answer. If today is Tuesday, what is the day that is tomorrow?
-
-1. The day that",True
-GPT-Neo,Coding,Write a Python function to add two numbers.,"def add(a, b): return a+b",standard_prompt,"Write a Python function to add two numbers. Provide only one answer.
-
-A:
-
-You can use the following code:
-import numpy as np
-",False
-GPT-Neo,Coding,Write a Python function to add two numbers.,"def add(a, b): return a+b",cot_prompt,"Let's think through this step-by-step. Write a Python function to add two numbers. Respond with only one answer.
-
-A:
-
-You can use the following code to add two numbers:
-import n",False
-GPT-Neo,Multiple-Choice,What is the capital of France? A) Berlin B) Paris C) Rome,B,standard_prompt,"What is the capital of France? A) Berlin B) Paris C) Rome Provide only one answer.
-
-The capital of France is the capital of the Kingdom of France. The capital of the Kingdom",True
-GPT-Neo,Multiple-Choice,What is the capital of France? A) Berlin B) Paris C) Rome,B,cot_prompt,"Let's think through this step-by-step. What is the capital of France? A) Berlin B) Paris C) Rome Respond with only one answer.
-
-2. What is the capital of the United States? A) New York B) Chicago",True
+GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2,False
+GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,A:,False
+GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2,False
+GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,A:,False
+GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,"Sunday, December 18, 2012",False
+GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,1. The day of the week.,False
+GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,Monday is the day of the week.,False
+GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,The first time I saw the word �,False
+GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",standard_prompt,A:,False
+GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",cot_prompt,A:,False
+GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",standard_prompt,A:,False
+GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",cot_prompt,A:,False
+GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
+A) Berlin B) Paris C) Rome",B,standard_prompt,A:,False
+GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
+A) Berlin B) Paris C) Rome",B,cot_prompt,B) Paris,True
+GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
+A) Berlin B) Paris C) Rome",B,standard_prompt,The capital of France is the capital of,False
+GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
+A) Berlin B) Paris C) Rome",B,cot_prompt,A:,False

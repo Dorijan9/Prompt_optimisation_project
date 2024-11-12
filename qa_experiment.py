@@ -4,16 +4,20 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import matplotlib.pyplot as plt
 
-# Set up question-answer pairs
+# Set up question-answer pairs with simplified instructions
 data = pd.DataFrame({
-    'Category': ['Math', 'Reasoning', 'Coding', 'Multiple-Choice'],
+    'Category': ['Math', 'Math', 'Reasoning', 'Reasoning', 'Coding', 'Coding', 'Multiple-Choice', 'Multiple-Choice'],
     'Question': [
-        'What is 2 + 2?', 
-        'If today is Monday, what day is tomorrow?', 
-        'Write a Python function to add two numbers.', 
-        'What is the capital of France? A) Berlin B) Paris C) Rome'
+        'What is 2 + 2? Answer with a number.', 
+        'What is 2 + 2? Answer with a number.', 
+        'If today is Monday, what day is tomorrow? Answer with one word.', 
+        'If today is Monday, what day is tomorrow? Answer with one word.', 
+        'Write a Python function to add two numbers. Answer with code only.', 
+        'Write a Python function to add two numbers. Answer with code only.',
+        'What is the capital of France? Choose A, B, or C.\nA) Berlin B) Paris C) Rome',
+        'What is the capital of France? Choose A, B, or C.\nA) Berlin B) Paris C) Rome'
     ],
-    'Expected Answer': ['4', 'Tuesday', 'def add(a, b): return a+b', 'B']
+    'Expected Answer': ['4', '4', 'Tuesday', 'Tuesday', 'def add(a, b): return a+b', 'def add(a, b): return a+b', 'B', 'B']
 })
 
 # Load Models
@@ -27,14 +31,14 @@ models = {
     # Add other models here as needed
 }
 
-# Define Modified Prompting Techniques for Single Answer
+# Define modified prompting techniques
 def standard_prompt(question):
-    return f"{question} Provide only one answer."
+    return f"{question}"
 
 def cot_prompt(question):
-    return f"Let's think through this step-by-step. {question} Respond with only one answer."
+    return f"Think step-by-step. {question}"
 
-# Function to Get Model Response with Limited Response Length
+# Function to get the model response with limited response length
 def get_model_response(model, tokenizer, prompt):
     # Ensure the tokenizer has a padding token
     if tokenizer.pad_token is None:
@@ -43,25 +47,35 @@ def get_model_response(model, tokenizer, prompt):
     # Tokenize the input with padding and attention mask
     inputs = tokenizer(prompt, return_tensors="pt", padding=True)
 
-    # Generate the response with explicit pad_token_id, attention_mask, and limited new tokens
+    # Generate the response with do_sample enabled
     outputs = model.generate(
         inputs["input_ids"],
         attention_mask=inputs["attention_mask"],
-        max_new_tokens=20,  # Specify the number of tokens to generate beyond the input length
-        pad_token_id=tokenizer.pad_token_id
+        max_new_tokens=10,  # Limit response length
+        pad_token_id=tokenizer.pad_token_id,
+        temperature=0.3,  # Lower temperature for less randomness
+        top_p=0.9,  # Focused sampling
+        do_sample=True  # Enable sampling for temperature and top_p to work
     )
 
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    
+    # Clean up the response by removing prompt text if it appears in the output
+    response = response.replace(prompt, "").strip()
+    response = response.splitlines()[0]  # Take only the first line of the response
+    
     return response
 
-# Run Experiment and Collect Responses
+# Run Experiment and Collect Responses (correct loop to avoid extra runs)
 results = []
 
 for model_name, (tokenizer, model) in models.items():
     for idx, row in data.iterrows():
         for prompting_method in [standard_prompt, cot_prompt]:
             prompt = prompting_method(row['Question'])
+            print(f"Processing: Model={model_name}, Category={row['Category']}, Prompting Method={prompting_method.__name__}, Question='{row['Question']}'")  # Debugging output
             response = get_model_response(model, tokenizer, prompt)
+            print(f"Response: {response}")  # Debugging output
             results.append({
                 "Model": model_name,
                 "Category": row["Category"],
@@ -70,6 +84,10 @@ for model_name, (tokenizer, model) in models.items():
                 "Prompting Method": prompting_method.__name__,
                 "Response": response
             })
+            
+            # Break after two entries for each category to ensure only two responses per prompt type
+            if len(results) >= (idx + 1) * 2:
+                break
 
 # Convert results to DataFrame
 results_df = pd.DataFrame(results)
@@ -93,4 +111,4 @@ plt.show()
 results_df.to_csv("model_evaluation_results.csv", index=False)
 
 # Display the DataFrame for quick inspection
-print(results_df[['Model', 'Category', 'Prompting Method', 'Expected Answer', 'Response', 'Correct']].head())
+print(results_df[['Model', 'Category', 'Prompting Method', 'Expected Answer', 'Response', 'Correct']])
