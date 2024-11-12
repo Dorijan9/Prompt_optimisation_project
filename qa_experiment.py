@@ -1,23 +1,18 @@
 # Import required libraries
 import pandas as pd
-import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import matplotlib.pyplot as plt
 
 # Set up question-answer pairs with simplified instructions
 data = pd.DataFrame({
-    'Category': ['Math', 'Math', 'Reasoning', 'Reasoning', 'Coding', 'Coding', 'Multiple-Choice', 'Multiple-Choice'],
+    'Category': ['Math', 'Reasoning', 'Coding', 'Multiple-Choice'],
     'Question': [
         'What is 2 + 2? Answer with a number.', 
-        'What is 2 + 2? Answer with a number.', 
-        'If today is Monday, what day is tomorrow? Answer with one word.', 
         'If today is Monday, what day is tomorrow? Answer with one word.', 
         'Write a Python function to add two numbers. Answer with code only.', 
-        'Write a Python function to add two numbers. Answer with code only.',
-        'What is the capital of France? Choose A, B, or C.\nA) Berlin B) Paris C) Rome',
-        'What is the capital of France? Choose A, B, or C.\nA) Berlin B) Paris C) Rome'
+        'What is the capital of France? Choose A, B, or C.\nA Berlin B Paris C Rome'
     ],
-    'Expected Answer': ['4', '4', 'Tuesday', 'Tuesday', 'def add(a, b): return a+b', 'def add(a, b): return a+b', 'B', 'B']
+    'Expected Answer': ['4', 'Tuesday', 'def add(a, b): return a+b', 'B']
 })
 
 # Load Models
@@ -26,9 +21,8 @@ def load_model(model_name):
     model = AutoModelForCausalLM.from_pretrained(model_name)
     return tokenizer, model
 
-models = {
-    "GPT-Neo": load_model("EleutherAI/gpt-neo-125M"),
-    # Add other models here as needed
+model = {
+    "GPT-Neo": load_model("meta-llama/Llama-2-7b-chat"),
 }
 
 # Define modified prompting techniques
@@ -66,42 +60,39 @@ def get_model_response(model, tokenizer, prompt):
     
     return response
 
-# Run Experiment and Collect Responses (correct loop to avoid extra runs)
+# Function to evaluate if the response exactly matches the expected answer with no additional text
+def evaluate_response_exact(expected, response):
+    return expected.strip().lower() == response.strip().lower()
+
+# Initialize the results list
 results = []
 
-for model_name, (tokenizer, model) in models.items():
-    for idx, row in data.iterrows():
-        for prompting_method in [standard_prompt, cot_prompt]:
-            prompt = prompting_method(row['Question'])
-            print(f"Processing: Model={model_name}, Category={row['Category']}, Prompting Method={prompting_method.__name__}, Question='{row['Question']}'")  # Debugging output
-            response = get_model_response(model, tokenizer, prompt)
-            print(f"Response: {response}")  # Debugging output
-            results.append({
-                "Model": model_name,
-                "Category": row["Category"],
-                "Question": row["Question"],
-                "Expected Answer": row["Expected Answer"],
-                "Prompting Method": prompting_method.__name__,
-                "Response": response
-            })
-            
-            # Break after two entries for each category to ensure only two responses per prompt type
-            if len(results) >= (idx + 1) * 2:
-                break
+# Loop through the DataFrame rows for each question and prompting method
+for idx, row in data.iterrows():
+    for prompting_method in [standard_prompt, cot_prompt]:
+        prompt = prompting_method(row['Question'])
+        #print(f"Processing: Prompting Method={prompting_method.__name__}, Question='{row['Question']}'")  # Debugging output
+        response = get_model_response(model["GPT-Neo"][1], model["GPT-Neo"][0], prompt)  # Use model directly
+        #print(f"Response: {response}")  # Debugging output
+        
+        # Evaluate correctness based on expected answer
+        is_correct = evaluate_response_exact(row['Expected Answer'], response)
+        results.append({
+            "Model": "GPT-Neo",
+            "Category": row["Category"],
+            "Question": row["Question"],
+            "Expected Answer": row["Expected Answer"],
+            "Prompting Method": prompting_method.__name__,
+            "Response": response,
+            "Accuracy": is_correct
+        })
 
 # Convert results to DataFrame
 results_df = pd.DataFrame(results)
 
-# Partial Match Evaluation Function
-def evaluate_response_partial(expected, response):
-    return expected.strip().lower() in response.strip().lower()
-
-# Apply the partial match evaluation function
-results_df['Correct'] = results_df.apply(lambda x: evaluate_response_partial(x['Expected Answer'], x['Response']), axis=1)
-
 # Visualize Results
 # Group by Model, Prompting Method, and Category and calculate mean accuracy
-accuracy = results_df.groupby(['Model', 'Prompting Method', 'Category'])['Correct'].mean().unstack()
+accuracy = results_df.groupby(['Model', 'Prompting Method', 'Category'])['Accuracy'].mean().unstack()
 accuracy.plot(kind='bar', figsize=(10, 6))
 plt.title("Model Performance by Prompting Method and Category")
 plt.ylabel("Accuracy")
@@ -111,4 +102,4 @@ plt.show()
 results_df.to_csv("model_evaluation_results.csv", index=False)
 
 # Display the DataFrame for quick inspection
-print(results_df[['Model', 'Category', 'Prompting Method', 'Expected Answer', 'Response', 'Correct']])
+print(results_df[['Model', 'Category', 'Prompting Method', 'Expected Answer', 'Response', 'Accuracy']])
