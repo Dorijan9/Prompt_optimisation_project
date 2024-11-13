@@ -1,11 +1,11 @@
 Model,Category,Question,Expected Answer,Prompting Method,Response,Accuracy
 GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2,False
-GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,1 + 2 = 3,False
-GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,The day is Monday.,False
-GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,1. The day of the week.,False
+GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,A:,False
+GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,"Monday is the day of the week,",False
+GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,1. The day before.,False
 GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",standard_prompt,A:,False
 GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",cot_prompt,A:,False
 GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
-A Berlin B Paris C Rome",B,standard_prompt,A Berlin A Berlin A Berlin A Berlin A Berlin,False
+A Berlin B Paris C Rome",B,standard_prompt,B Paris A Berlin A Berlin A Berlin A Berlin,False
 GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
-A Berlin B Paris C Rome",B,cot_prompt,A Paris A Paris A Paris A Paris A Paris,False
+A Berlin B Paris C Rome",B,cot_prompt,A Berlin B Paris C Rome,False

@@ -1,34 +1,7 @@
 # Import required libraries
-import time
-import requests
 import pandas as pd
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import matplotlib.pyplot as plt
-
-# Hugging Face API setup
-API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b"
-headers = {"Authorization": "Bearer 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"}
-
-# Define modified prompting techniques
-def standard_prompt(question):
-    return f"{question}"
-
-def cot_prompt(question):
-    return f"Think step-by-step. {question}"
-
-# Function to get the model response using Hugging Face Inference API with retries
-def get_model_response(api_url, headers, prompt, max_retries=10, wait_time=20):
-    for attempt in range(max_retries):
-        response = requests.post(api_url, headers=headers, json={"inputs": prompt})
-        if response.status_code == 200:
-            response_json = response.json()
-            return response_json[0]["generated_text"] if response_json else ""
-        elif response.status_code == 503:
-            print(f"Error: {response.status_code}, {response.json()['error']}. Retrying in {wait_time} seconds...")
-            time.sleep(wait_time)
-        else:
-            print(f"Error: {response.status_code}, {response.text}")
-            return ""
-    return ""  # Return an empty response if all retries fail
 
 # Set up question-answer pairs with simplified instructions
 data = pd.DataFrame({
@@ -42,6 +15,51 @@ data = pd.DataFrame({
     'Expected Answer': ['4', 'Tuesday', 'def add(a, b): return a+b', 'B']
 })
 
+# Load Models
+def load_model(model_name):
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+    return tokenizer, model
+
+model = {
+    "GPT-Neo": load_model("EleutherAI/gpt-neo-125M"),
+}
+
+# Define modified prompting techniques
+def standard_prompt(question):
+    return f"{question}"
+
+def cot_prompt(question):
+    return f"Think step-by-step. {question}"
+
+# Function to get the model response with limited response length
+def get_model_response(model, tokenizer, prompt):
+    # Ensure the tokenizer has a padding token
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token  # Use eos_token as pad_token
+
+    # Tokenize the input with padding and attention mask
+    inputs = tokenizer(prompt, return_tensors="pt", padding=True)
+
+    # Generate the response with do_sample enabled
+    outputs = model.generate(
+        inputs["input_ids"],
+        attention_mask=inputs["attention_mask"],
+        max_new_tokens=10,  # Limit response length
+        pad_token_id=tokenizer.pad_token_id,
+        temperature=0.3,  # Lower temperature for less randomness
+        top_p=0.9,  # Focused sampling
+        do_sample=True  # Enable sampling for temperature and top_p to work
+    )
+
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    
+    # Clean up the response by removing prompt text if it appears in the output
+    response = response.replace(prompt, "").strip()
+    response = response.splitlines()[0]  # Take only the first line of the response
+    
+    return response
+
 # Function to evaluate if the response exactly matches the expected answer with no additional text
 def evaluate_response_exact(expected, response):
     return expected.strip().lower() == response.strip().lower()
@@ -53,12 +71,14 @@ results = []
 for idx, row in data.iterrows():
     for prompting_method in [standard_prompt, cot_prompt]:
         prompt = prompting_method(row['Question'])
-        response = get_model_response(API_URL, headers, prompt)  # Use API with retry mechanism
+        #print(f"Processing: Prompting Method={prompting_method.__name__}, Question='{row['Question']}'")  # Debugging output
+        response = get_model_response(model["GPT-Neo"][1], model["GPT-Neo"][0], prompt)  # Use model directly
+        #print(f"Response: {response}")  # Debugging output
         
         # Evaluate correctness based on expected answer
         is_correct = evaluate_response_exact(row['Expected Answer'], response)
         results.append({
-            "Model": "LLaMA-2-7B",
+            "Model": "GPT-Neo",
             "Category": row["Category"],
             "Question": row["Question"],
             "Expected Answer": row["Expected Answer"],
