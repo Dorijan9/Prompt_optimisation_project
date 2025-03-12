@@ -1,11 +1,17 @@
 Model,Category,Question,Expected Answer,Prompting Method,Response,Accuracy
-GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2,False
-GPT-Neo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,A:,False
-GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,Monday is a day of celebration for the,False
-GPT-Neo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,1. The day of the week.,False
-GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",standard_prompt,A:,False
-GPT-Neo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",cot_prompt,This is a very simple example of a,False
-GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
-A Berlin B Paris C Rome",B,standard_prompt,The capital of France is the capital of,False
-GPT-Neo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
-A Berlin B Paris C Rome",B,cot_prompt,B Paris A Berlin A Berlin A Berlin A Berlin,False
+gpt-3.5-turbo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2 + 2 equals 4.,False
+gpt-3.5-turbo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,2 + 2 = 4,False
+gpt-3.5-turbo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,Tuesday,True
+gpt-3.5-turbo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,Tuesday,True
+gpt-3.5-turbo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",standard_prompt,"```python
+def add_numbers(num1, num2):
+    return num1 + num2
+```",False
+gpt-3.5-turbo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",cot_prompt,"```python
+def add_numbers(num1, num2):
+    return num1 + num2
+```",False
+gpt-3.5-turbo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
+A Berlin B Paris C Rome",B,standard_prompt,B Paris,False
+gpt-3.5-turbo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
+A Berlin B Paris C Rome",B,cot_prompt,"The capital of France is Paris, so the correct choice is B.",False
