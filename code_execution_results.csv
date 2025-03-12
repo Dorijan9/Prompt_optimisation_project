@@ -1,27 +1,27 @@
 Language,Code,Expected,Output,Error,Execution Time (s),Correct
 python,"print(sum([1, 2, 3, 4, 5]))","15
 ","15
-",,0.018188953399658203,True
+",,0.02294301986694336,True
 python,"def factorial(n):
     return 1 if n == 0 else n * factorial(n-1)
 print(factorial(5))","120
 ","120
-",,0.01578688621520996,True
+",,0.017940044403076172,True
 javascript,"console.log([1,2,3,4,5].reduce((a, b) => a + b, 0));","15
 ","15
-",,1.4274098873138428,True
+",,1.3872499465942383,True
 javascript,"function factorial(n) { return n === 0 ? 1 : n * factorial(n-1); }
 console.log(factorial(5));","120
 ","120
-",,0.04380488395690918,True
+",,0.04329991340637207,True
 cpp,"#include <iostream>
 using namespace std;
 int main() { cout << 1+2+3+4+5 << endl; return 0; }","15
 ","15
-",,5.013896942138672,True
+",,0.6948070526123047,True
 cpp,"#include <iostream>
 using namespace std;
 int factorial(int n) { return (n == 0) ? 1 : n * factorial(n - 1); }
 int main() { cout << factorial(5) << endl; return 0; }","120
 ","120
-",,0.3254868984222412,True
+",,0.2925581932067871,True
