@@ -1,15 +1,11 @@
-import torch
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
+import openai
+import os
 
-# Define the two models
-models = {
-    "Llama 3": "meta-llama/Meta-Llama-3-8B",
-    "GPT-NeoX": "EleutherAI/gpt-neox-20b"
-}
+# Set OpenAI API Key
+openai.api_key = "api-key"  
+
+# Define the OpenAI Model
+model_name = "gpt-4-turbo"
 
 # Define code-related tasks
 tasks = ["Code Completion", "Code Generation", "Debugging", "Code Explanation"]
@@ -22,79 +18,48 @@ prompts = {
     "Code Explanation": "Explain what this Python code does:\ndef factorial(n):\n    return 1 if n == 0 else n * factorial(n-1)"
 }
 
-# Initialize score dictionary
-scores = {model: {task: {"Correctness": 0, "Coherence": 0, "Reasoning Depth": 0} for task in tasks} for model in models}
+# Function to generate responses using OpenAI
+def generate_response(prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model=model_name,
+            messages=[{"role": "system", "content": "You are a helpful AI assistant."},
+                      {"role": "user", "content": prompt}],
+            max_tokens=100
+        )
+        return response["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        return f"Error: {e}"
 
 # Function to evaluate model responses
 def evaluate_response(task, response):
-    """
-    Assigns scores for correctness, coherence, and reasoning depth based on heuristic rules.
-    """
     correctness, coherence, reasoning_depth = 0, 0, 0
 
     # Basic correctness checks
-    if task == "Code Completion":
-        if "return" in response and "if" in response:
-            correctness = 1
-    elif task == "Code Generation":
-        if "def" in response and "return" in response:
-            correctness = 1
-    elif task == "Debugging":
-        if "+" in response:  # Checking if the error was fixed (addition instead of subtraction)
-            correctness = 1
-    elif task == "Code Explanation":
-        if "recursive" in response.lower() or "factorial" in response.lower():
-            correctness = 1
+    if task == "Code Completion" and "return" in response and "if" in response:
+        correctness = 1
+    elif task == "Code Generation" and "def" in response and "return" in response:
+        correctness = 1
+    elif task == "Debugging" and "+" in response:
+        correctness = 1
+    elif task == "Code Explanation" and ("recursive" in response.lower() or "factorial" in response.lower()):
+        correctness = 1
 
-    # Coherence (response length heuristic)
+    # Coherence & reasoning depth (word heuristics)
     coherence = min(1, len(response.split()) / 15)  
-
-    # Reasoning depth (unique words heuristic)
     reasoning_depth = min(1, len(set(response.split())) / 15)
 
     return correctness, coherence, reasoning_depth
 
-# Load models and evaluate
-for model_name, model_path in models.items():
-    print(f"Loading model: {model_name}...")
-    
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16, device_map="auto")
+# Evaluate model on tasks and print results
+for task, prompt in prompts.items():
+    print(f"\n--- Task: {task} ---")
+    response = generate_response(prompt)
+    correctness, coherence, reasoning_depth = evaluate_response(task, response)
 
-    text_pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer, max_length=100)
-
-    for task, prompt in prompts.items():
-        response = text_pipeline(prompt)[0]["generated_text"]
-        correctness, coherence, reasoning_depth = evaluate_response(task, response)
-
-        scores[model_name][task]["Correctness"] = correctness
-        scores[model_name][task]["Coherence"] = coherence
-        scores[model_name][task]["Reasoning Depth"] = reasoning_depth
-
-# Convert results to a plottable format
-data = []
-for model, task_scores in scores.items():
-    for task, score_dict in task_scores.items():
-        for score_type, value in score_dict.items():
-            data.append([model, task, score_type, value])
-
-df = pd.DataFrame(data, columns=["Model", "Task", "Score Type", "Score"])
-
-# Plot performance
-plt.figure(figsize=(10, 5))
-sns.barplot(x="Task", y="Score", hue="Model", data=df[df["Score Type"] == "Correctness"])
-plt.title("Correctness Score Comparison (Code Tasks)")
-plt.legend(title="Models")
-plt.show()
-
-plt.figure(figsize=(10, 5))
-sns.barplot(x="Task", y="Score", hue="Model", data=df[df["Score Type"] == "Coherence"])
-plt.title("Coherence Score Comparison (Code Tasks)")
-plt.legend(title="Models")
-plt.show()
-
-plt.figure(figsize=(10, 5))
-sns.barplot(x="Task", y="Score", hue="Model", data=df[df["Score Type"] == "Reasoning Depth"])
-plt.title("Reasoning Depth Score Comparison (Code Tasks)")
-plt.legend(title="Models")
-plt.show()
+    print(f"Prompt:\n{prompt}")
+    print(f"GPT-4-Turbo Response:\n{response}")
+    print(f"Correctness: {correctness}")
+    print(f"Coherence: {coherence:.2f}")
+    print(f"Reasoning Depth: {reasoning_depth:.2f}")
+    print("-" * 50)
