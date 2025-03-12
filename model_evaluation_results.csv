@@ -1,17 +1,17 @@
 Model,Category,Question,Expected Answer,Prompting Method,Response,Accuracy
-gpt-3.5-turbo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2 + 2 equals 4.,False
-gpt-3.5-turbo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,2 + 2 = 4,False
+gpt-3.5-turbo,Math,What is 2 + 2? Answer with a number.,4,standard_prompt,2 + 2 equals 4.,True, albeit did not respond with just a number.
+gpt-3.5-turbo,Math,What is 2 + 2? Answer with a number.,4,cot_prompt,2 + 2 = 4,True, albeit did not respond with just a number.
 gpt-3.5-turbo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,standard_prompt,Tuesday,True
 gpt-3.5-turbo,Reasoning,"If today is Monday, what day is tomorrow? Answer with one word.",Tuesday,cot_prompt,Tuesday,True
 gpt-3.5-turbo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",standard_prompt,"```python
 def add_numbers(num1, num2):
     return num1 + num2
-```",False
+```",True (different variables and function names used)
 gpt-3.5-turbo,Coding,Write a Python function to add two numbers. Answer with code only.,"def add(a, b): return a+b",cot_prompt,"```python
 def add_numbers(num1, num2):
     return num1 + num2
-```",False
+```",True (different variables and function names used)
 gpt-3.5-turbo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
-A Berlin B Paris C Rome",B,standard_prompt,B Paris,False
+A Berlin B Paris C Rome",B,standard_prompt,B,True
 gpt-3.5-turbo,Multiple-Choice,"What is the capital of France? Choose A, B, or C.
-A Berlin B Paris C Rome",B,cot_prompt,"The capital of France is Paris, so the correct choice is B.",False
+A Berlin B Paris C Rome",B,cot_prompt,"The capital of France is Paris, so the correct choice is B.",True, but with additional sentence. 
