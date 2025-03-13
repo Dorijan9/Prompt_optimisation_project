@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = "api-key"
 
 # Set up question-answer pairs with simplified instructions
 data = pd.DataFrame({
