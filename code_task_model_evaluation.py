@@ -45,7 +45,7 @@ def evaluate_response(task, response):
     elif task == "Code Explanation" and ("recursive" in response.lower() or "factorial" in response.lower()):
         correctness = 1
 
-    # Coherence & reasoning depth (word heuristics)
+    # Coherence & reasoning depth 
     coherence = min(1, len(response.split()) / 15)  
     reasoning_depth = min(1, len(set(response.split())) / 15)
 

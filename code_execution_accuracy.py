@@ -3,8 +3,8 @@ import time
 import openai  # Replace with an appropriate LLM library (e.g., llama_index, transformers)
 import pandas as pd
 
-# Define OpenAI API Key (Replace with your own key or integrate a secure method)
-OPENAI_API_KEY = "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"
+# Define OpenAI API Key
+OPENAI_API_KEY = "api-key"
 openai.api_key = OPENAI_API_KEY  # Set API Key globally
 
 # Define base coding challenges
@@ -15,7 +15,7 @@ challenges = {
 }
 
 def generate_code_prompt_variations(base_prompt, model="gpt-4"):
-    """Use LLM to generate multiple optimized versions of the given coding challenge."""
+    "Use LLM to generate multiple optimized versions of the given coding challenge."
     response = openai.ChatCompletion.create(
         model=model,
         messages=[
@@ -26,7 +26,7 @@ def generate_code_prompt_variations(base_prompt, model="gpt-4"):
     return [choice["message"]["content"] for choice in response["choices"]]
 
 def execute_code(language, code):
-    """Executes code in the given language and captures output."""
+    "Executes code in the given language and captures output."
     start_time = time.time()
     try:
         if language == "python":
@@ -49,7 +49,7 @@ def execute_code(language, code):
         return "", str(e), 0.0
 
 def evaluate_prompt_optimization():
-    """Runs the optimized prompt tests and evaluates performance."""
+    "Runs the optimized prompt tests and evaluates performance."
     results = []
     for lang, base_prompt in challenges.items():
         variations = generate_code_prompt_variations(base_prompt)

@@ -42,7 +42,7 @@ def get_openai_response(prompt, model="gpt-3.5-turbo"):
 def evaluate_response_exact(expected, response):
     return expected.strip().lower() == response.strip().lower()
 
-# Initialize the results list
+# Initialise the results list
 results = []
 
 # Loop through the DataFrame rows for each question and prompting method

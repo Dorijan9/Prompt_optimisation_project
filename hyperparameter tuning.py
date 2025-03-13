@@ -31,7 +31,7 @@ def objective(trial):
     return score
 
 # Create and run the study
-study = optuna.create_study(direction="maximize")
+study = optuna.create_study(direction="maximise")
 study.optimize(objective, n_trials=50)
 
 # Best hyperparameters
