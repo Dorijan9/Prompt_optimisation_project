@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Hugging Face API setup
 API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b"
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "Bearer your-api-key"}
 
 # Define modified prompting techniques
 def standard_prompt(question):
