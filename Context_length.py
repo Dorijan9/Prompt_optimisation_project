@@ -4,7 +4,7 @@ import pandas as pd
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # Set Hugging Face API token
-os.environ["HUGGING_FACE_TOKEN"] = "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"
+os.environ["HUGGING_FACE_TOKEN"] = "your-api-key"
 
 # Load model and tokenizer
 model_name = "EleutherAI/gpt-neo-125M"  # Replace with desired model
